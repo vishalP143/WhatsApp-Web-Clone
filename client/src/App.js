@@ -1,40 +1,62 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Sidebar from './components/Sidebar';
 import ChatWindow from './components/ChatWindow';
-import { Box, useMediaQuery } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+import { Box, useMediaQuery, IconButton } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { Brightness4, Brightness7 } from '@mui/icons-material';
 
 function App() {
   const [selectedUser, setSelectedUser] = useState(null);
+  const [mode, setMode] = useState('light');
 
-  // 🎯 Detect if user is on a small screen (mobile)
-  const theme = useTheme();
+  const toggleTheme = () => {
+    setMode(prev => (prev === 'light' ? 'dark' : 'light'));
+  };
+
+  const theme = useMemo(
+    () =>
+      createTheme({
+        palette: {
+          mode,
+        },
+      }),
+    [mode]
+  );
+
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
-  // 🔙 Handle back button (on mobile)
   const handleBack = () => {
     setSelectedUser(null);
   };
 
   return (
-    <Box sx={{ display: 'flex', height: '100vh', fontFamily: 'sans-serif' }}>
-      {/* 🧭 Show Sidebar on desktop or if no user selected */}
-      {(!selectedUser || !isMobile) && (
-        <Sidebar onSelectUser={setSelectedUser} />
-      )}
-
-      {/* 💬 Show ChatWindow only when user is selected */}
-      {selectedUser && (
-        <ChatWindow waId={selectedUser} onBack={isMobile ? handleBack : null} />
-      )}
-
-      {/* 🎉 Show welcome message if no chat selected (desktop only) */}
-      {!selectedUser && !isMobile && (
-        <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <h2>Select a conversation</h2>
+    <ThemeProvider theme={theme}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh', bgcolor: 'background.default', color: 'text.primary' }}>
+        
+        {/* 🌗 Dark Mode Toggle */}
+        <Box sx={{ display: 'flex', justifyContent: 'flex-end', px: 2, py: 1, borderBottom: '1px solid', borderColor: 'divider' }}>
+          <IconButton onClick={toggleTheme} color="inherit">
+            {mode === 'dark' ? <Brightness7 /> : <Brightness4 />}
+          </IconButton>
         </Box>
-      )}
-    </Box>
+
+        <Box sx={{ display: 'flex', flex: 1 }}>
+          {(!selectedUser || !isMobile) && (
+            <Sidebar onSelectUser={setSelectedUser} />
+          )}
+
+          {selectedUser && (
+            <ChatWindow waId={selectedUser} onBack={isMobile ? handleBack : null} />
+          )}
+
+          {!selectedUser && !isMobile && (
+            <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <h2>Select a conversation</h2>
+            </Box>
+          )}
+        </Box>
+      </Box>
+    </ThemeProvider>
   );
 }
 
