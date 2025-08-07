@@ -31,7 +31,7 @@ function ChatWindow({ waId, onBack }) {
   const [selectedMsgId, setSelectedMsgId] = useState(null);
   const bottomRef = useRef(null);
 
-  const backendURL = 'https://5000-vishalp143-whatsappwebc-fcmwk1v79pf.ws-us120.gitpod.io';
+  const backendURL = 'https://whatsapp-web-clone-1yeh.onrender.com';
   const emojiOptions = ['😄', '❤️', '👍', '👎', '😂'];
 
   const theme = useTheme();
